@@ -17,10 +17,10 @@
 
 namespace Fw {
 
-  void FilePacket::PathName ::
+   FilePacket::PathName ::
     initialize(const char *const value)
   {
-    const U32 length = ::strnlen(value, MAX_LENGTH);
+     U32 length = ::strnlen(value, MAX_LENGTH);
     this->length = length;
     this->value = value;
   }
@@ -28,31 +28,31 @@ namespace Fw {
   U32 FilePacket::PathName ::
     bufferSize(void) const
   {
-    return sizeof(this->length) + this->length;
+     sizeof(this->length) + this->length;
   }
 
   SerializeStatus FilePacket::PathName ::
-    fromSerialBuffer(SerialBuffer& serialBuffer) 
+    SerialBuffer(SerialBuffer& serialBuffer) 
   {
 
     {
-      const SerializeStatus status = 
+       SerializeStatus status = 
         serialBuffer.deserialize(this->length);
-      if (status != FW_SERIALIZE_OK)
-        return status;
+       (status != FW_SERIALIZE_OK)
+         status;
     }
 
     {
-      const U8* addrLeft = serialBuffer.getBuffAddrLeft();
+       U8* addrLeft = serialBuffer.getBuffAddrLeft();
       U8 bytes[this->length];
-      const SerializeStatus status =
+       SerializeStatus status =
         serialBuffer.popBytes(bytes, this->length);
-      if (status != FW_SERIALIZE_OK)
+       (status != FW_SERIALIZE_OK)
         return status;
       this->value = reinterpret_cast<const char*>(addrLeft);
     }
 
-    return FW_SERIALIZE_OK;
+     FW_SERIALIZE_OK;
 
   }
 
@@ -61,22 +61,22 @@ namespace Fw {
   {
 
     {
-      const SerializeStatus status =
+       SerializeStatus status =
         serialBuffer.serialize(this->length);
-      if (status != FW_SERIALIZE_OK)
-        return status;
+       (status != FW_SERIALIZE_OK)
+         status;
     }
 
     {
-      const SerializeStatus status = serialBuffer.pushBytes(
+       SerializeStatus status = serialBuffer.pushBytes(
           reinterpret_cast<const U8 *const>(this->value), 
           this->length
       );
-      if (status != FW_SERIALIZE_OK)
-        return status;
+       (status != FW_SERIALIZE_OK)
+          status;
     }
 
-    return FW_SERIALIZE_OK;
+         FW_SERIALIZE_OK;
 
   }
 
