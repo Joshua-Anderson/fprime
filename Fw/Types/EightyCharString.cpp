@@ -13,56 +13,40 @@ namespace Fw {
     }
 
     EightyCharString::EightyCharString(const StringBase& src) : StringBase() {
-        this->copyBuff(src.toChar(), sizeof(this->m_buf));
+        this->copyBuff(src.toChar(), src.getCapacity());
     }
 
     EightyCharString::EightyCharString(const EightyCharString& src) : StringBase() {
-        this->copyBuff(src.m_buf, sizeof(this->m_buf));
+        this->copyBuff(src.toChar(), src.getCapacity());
     }
 
     EightyCharString::EightyCharString(void) : StringBase() {
         this->m_buf[0] = 0;
     }
 
-    EightyCharString::~EightyCharString(void) {
+    EightyCharString& EightyCharString::operator=(const EightyCharString& other) {
+        this->copyBuff(other.toChar(), other.getCapacity());
+        return *this;
     }
 
-    NATIVE_UINT_TYPE EightyCharString::length(void) const {
-        return strnlen(this->m_buf,sizeof(this->m_buf));
+    EightyCharString& EightyCharString::operator=(const StringBase& other) {
+        this->copyBuff(other.toChar(), other.getCapacity());
+        return *this;
+    }
+
+    EightyCharString& EightyCharString::operator=(const char* other) {
+        this->copyBuff(other, sizeof(this->m_buf));
+        return *this;
+    }
+
+    EightyCharString::~EightyCharString(void) {
     }
 
     const char* EightyCharString::toChar(void) const {
         return this->m_buf;
     }
 
-    const EightyCharString& EightyCharString::operator=(const EightyCharString& other) {
-        this->copyBuff(other.m_buf,sizeof(this->m_buf));
-        return *this;
-    }
-
-    SerializeStatus EightyCharString::serialize(SerializeBufferBase& buffer) const {
-        NATIVE_UINT_TYPE strSize = strnlen(this->m_buf,sizeof(this->m_buf));
-        // serialize string as buffer
-        return buffer.serialize((U8*)this->m_buf,strSize);
-    }
-
-    SerializeStatus EightyCharString::deserialize(SerializeBufferBase& buffer) {
-        NATIVE_UINT_TYPE maxSize = sizeof(this->m_buf);
-        // deserialize string
-        SerializeStatus stat = buffer.deserialize((U8*)this->m_buf,maxSize);
-        // make sure it is null-terminated
-        this->terminate(maxSize);
-
-        return stat;
-    }
-
     NATIVE_UINT_TYPE EightyCharString::getCapacity(void) const {
         return STRING_SIZE;
     }
-
-    void EightyCharString::terminate(NATIVE_UINT_TYPE size) {
-        // null terminate the string
-        this->m_buf[size < sizeof(this->m_buf)?size:sizeof(this->m_buf)-1] = 0;
-    }
-
 }

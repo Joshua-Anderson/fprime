@@ -13,56 +13,40 @@ namespace Fw {
     }
 
     InternalInterfaceString::InternalInterfaceString(const StringBase& src) : StringBase()  {
-        this->copyBuff(src.toChar(), sizeof(this->m_buf));
+        this->copyBuff(src.toChar(), src.getCapacity());
     }
 
     InternalInterfaceString::InternalInterfaceString(const InternalInterfaceString& src) : StringBase()  {
-        this->copyBuff(src.m_buf, sizeof(this->m_buf));
+        this->copyBuff(src.m_buf, src.getCapacity());
     }
 
     InternalInterfaceString::InternalInterfaceString(void) : StringBase()  {
         this->m_buf[0] = 0;
     }
 
-    InternalInterfaceString::~InternalInterfaceString(void) {
+    InternalInterfaceString& InternalInterfaceString::operator=(const InternalInterfaceString& other) {
+        this->copyBuff(other.toChar(), other.getCapacity());
+        return *this;
     }
 
-    NATIVE_UINT_TYPE InternalInterfaceString::length(void) const {
-        return strnlen(this->m_buf,sizeof(this->m_buf));
+    InternalInterfaceString& InternalInterfaceString::operator=(const StringBase& other) {
+        this->copyBuff(other.toChar(), other.getCapacity());
+        return *this;
+    }
+
+    InternalInterfaceString& InternalInterfaceString::operator=(const char* other) {
+        this->copyBuff(other, sizeof(this->m_buf));
+        return *this;
+    }
+
+    InternalInterfaceString::~InternalInterfaceString(void) {
     }
 
     const char* InternalInterfaceString::toChar(void) const {
         return this->m_buf;
     }
 
-    SerializeStatus InternalInterfaceString::serialize(SerializeBufferBase& buffer) const {
-        NATIVE_UINT_TYPE strSize = strnlen(this->m_buf,sizeof(this->m_buf));
-        // serialize string as buffer
-        return buffer.serialize((U8*)this->m_buf,strSize);
-    }
-
-    SerializeStatus InternalInterfaceString::deserialize(SerializeBufferBase& buffer) {
-        NATIVE_UINT_TYPE maxSize = sizeof(this->m_buf);
-        // deserialize string
-        SerializeStatus stat = buffer.deserialize((U8*)this->m_buf,maxSize);
-        // make sure it is null-terminated
-        this->terminate(maxSize);
-
-        return stat;
-    }
-
     NATIVE_UINT_TYPE InternalInterfaceString::getCapacity(void) const {
         return FW_INTERNAL_INTERFACE_STRING_MAX_SIZE;
     }
-
-    const InternalInterfaceString& InternalInterfaceString::operator=(const InternalInterfaceString& other) {
-        this->copyBuff(other.m_buf,this->getCapacity());
-        return *this;
-    }
-
-    void InternalInterfaceString::terminate(NATIVE_UINT_TYPE size) {
-        // null terminate the string
-        this->m_buf[size < sizeof(this->m_buf)?size:sizeof(this->m_buf)-1] = 0;
-    }
-
 }
